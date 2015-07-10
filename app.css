@@ -1,0 +1,13 @@
+.status {
+  margin-bottom: 0;
+}
+.online {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.kill {
+  cursor: pointer;
+}
+.sessions_list {
+  margin-bottom: 0;
+}

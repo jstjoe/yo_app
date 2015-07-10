@@ -1,0 +1,13 @@
+{{#if sessions}}
+  <div class="alert alert-success status online">{{name}} is online</div>
+  <table class="table sessions_list">
+  {{#sessions}}
+    <tr>
+      <td>Last seen {{ago}}</td>
+      <td><i class="icon-remove kill pull-right" data-session-id="{{id}}" data-user-id="{{user_id}}" data-toggle="tooltip" data-placement="left" title="End Session"></i></td>
+    </tr>
+  {{/sessions}}
+  </table>
+{{else}}
+  <div class="alert alert-error status">{{name}} is offline</div>
+{{/if}}
