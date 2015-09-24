@@ -22,16 +22,15 @@
       }
     },
     onActivated: function(data) {
-      if(this._fresh()) {
+      if(this._stale()) {
         console.log('Sessions - cache used');
         this.renderSessions( this.store( 'sessions_' + this._user().id) );
         return;
       }
       this.ajax('getUserSessions', this._user().id);
-      this.lastFetched = new Date().getTime();
-      this.store('last_fetched', this.lastFetched);
     },
     onCreated: function() {
+      // hack to remove padding from parent element
       this.$('section').parent('.app_view').css({
         'padding-bottom'  : 0,
         'padding-left'    : 0,
@@ -42,6 +41,10 @@
       this.hideConditionally();
     },
     gotSessions: function(res) {
+      // store the time for caching purposes
+      this.lastFetched = new Date().getTime();
+      this.store('last_fetched_' + this._user().id, this.lastFetched);
+      // render the sessions, then cache them in localStorage
       this.renderSessions(res.sessions);
       this.store( 'sessions_' + this._user().id, res.sessions);
     },
@@ -51,7 +54,6 @@
         session.last_seen_at_epoch = new Date(session.last_seen_at).getTime();
       });
       sessions = _.sortBy(sessions, 'last_seen_at_epoch').reverse();
-      // console.dir(sessions);
       this.switchTo('sessions', {
         sessions: sessions,
         name: this._user().name
@@ -76,7 +78,7 @@
       }
     },
     willDestroy: function() {
-      this.store('last_fetched', null);
+      this.store('last_fetched_' + this._user().id, null);
     },
     _user: function() {
       if(this.currentLocation() == 'user_sidebar') {
@@ -91,10 +93,10 @@
         };
       }
     },
-    _fresh: function() {
+    _stale: function() {
       var now = new Date().getTime();
-      if(this.store('last_fetched')) {
-        return this.store('last_fetched') > now - 300000;//300000
+      if(this.store('last_fetched_' + this._user().id)) {
+        return this.store('last_fetched_' + this._user().id) > now - 300000;//300000
       } else {
         return false;
       }
